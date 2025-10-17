@@ -31,8 +31,15 @@
  ******************************************************************************************************************/
 define(['N/ui/serverWidget', '../Models/jj_cm_savedsearches.js'],
     function (serverWidget, cm_model) {
-        const onRequest = (context) => {
-            let request = context.request;
+         /**
+         * Defines the Suitelet script trigger point.
+         * @param {Object} scriptContext
+         * @param {ServerRequest} scriptContext.request - Incoming request
+         * @param {ServerResponse} scriptContext.response - Suitelet response
+         * @since 2015.2
+         */
+        const onRequest = (scriptContext) => {
+            let request = scriptContext.request;
             let subsidiaryId = request.parameters.sub || '';
             let projectId = request.parameters.proj || '';
             let pageIndexStr = request.parameters.pageIndex || '0';
@@ -226,7 +233,7 @@ define(['N/ui/serverWidget', '../Models/jj_cm_savedsearches.js'],
                 });
             });
 
-            context.response.writePage(form);
+            scriptContext.response.writePage(form);
         };
         return { onRequest };
     });

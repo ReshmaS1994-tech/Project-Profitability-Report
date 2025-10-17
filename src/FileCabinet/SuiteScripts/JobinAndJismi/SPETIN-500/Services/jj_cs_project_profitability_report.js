@@ -82,36 +82,11 @@ define(['N/record', 'N/url', 'N/runtime','N/currentRecord'],
                 })
             }
         }
-        /**
-         * Redirects the browser to the specified URL.
-         *
-         * @param {number} newPageIndex - The page number to navigate to.
-         */
-        function redirectPage(newPageIndex) {
-            try{
-            let curRecord = currentRecord.get();
-            let sub = curRecord.getValue('custpage_jj_subsidiary_field') || '';
-            let proj = curRecord.getValue('custpage_jj_project') || '';
-            let suiteletUrl = url.resolveScript({
-                scriptId: 'customscript_jj_project_pof_report',
-                deploymentId: 'customdeploy_jj_sl_project_prof_report',
-                params: {
-                    'sub': sub,
-                    'proj': proj,
-                    'pageIndex': newPageIndex
-                },
-            });
-            window.location.href = suiteletUrl;
-            }
-            catch(e)
-            {
-                log.error("error@redirectPage",e);
-            }
-            }
+       
             return {
                 pageInit: pageInit,
-                fieldChanged: fieldChanged,
-                redirectPage: redirectPage
+                fieldChanged: fieldChanged
+              
             };
 
     });
