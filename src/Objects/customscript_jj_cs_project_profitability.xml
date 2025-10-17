@@ -1,0 +1,10 @@
+<clientscript scriptid="customscript_jj_cs_project_profitability">
+  <description></description>
+  <isinactive>F</isinactive>
+  <name>Project Profitability Report</name>
+  <notifyadmins>F</notifyadmins>
+  <notifyemails></notifyemails>
+  <notifyowner>T</notifyowner>
+  <notifyuser>F</notifyuser>
+  <scriptfile>[/SuiteScripts/JobinAndJismi/SPETIN-500/Services/jj_cs_project_profitability_report.js]</scriptfile>
+</clientscript>
