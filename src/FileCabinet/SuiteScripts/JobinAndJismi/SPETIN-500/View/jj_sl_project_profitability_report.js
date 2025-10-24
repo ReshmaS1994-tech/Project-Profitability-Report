@@ -31,13 +31,13 @@
  ******************************************************************************************************************/
 define(['N/ui/serverWidget', '../Models/jj_cm_savedsearches.js'],
     function (serverWidget, cm_model) {
-         /**
-         * Defines the Suitelet script trigger point.
-         * @param {Object} scriptContext
-         * @param {ServerRequest} scriptContext.request - Incoming request
-         * @param {ServerResponse} scriptContext.response - Suitelet response
-         * @since 2015.2
-         */
+        /**
+        * Defines the Suitelet script trigger point.
+        * @param {Object} scriptContext
+        * @param {ServerRequest} scriptContext.request - Incoming request
+        * @param {ServerResponse} scriptContext.response - Suitelet response
+        * @since 2015.2
+        */
         const onRequest = (scriptContext) => {
             let request = scriptContext.request;
             let subsidiaryId = request.parameters.sub || '';
@@ -46,6 +46,7 @@ define(['N/ui/serverWidget', '../Models/jj_cm_savedsearches.js'],
             let pageIndex = parseInt(pageIndexStr) || 0;
             let form = serverWidget.createForm({ title: 'Project Profitability Report' });
             form.clientScriptModulePath = '../Services/jj_cs_project_profitability_report.js';
+
             let subsidiaryField = form.addField({
                 id: 'custpage_jj_subsidiary_field',
                 type: serverWidget.FieldType.SELECT,
@@ -63,14 +64,27 @@ define(['N/ui/serverWidget', '../Models/jj_cm_savedsearches.js'],
                     isSelected: (opt.id === subsidiaryId)
                 });
             });
+             
             if (subsidiaryId) subsidiaryField.defaultValue = subsidiaryId;
 
-            let projectField = form.addField({
+            var projectField = form.addField({
                 id: 'custpage_jj_project',
                 type: serverWidget.FieldType.SELECT,
-                label: 'Project',
-                source: 'job'
+                label: 'Project'
             });
+            let projectResults = cm_model.projectSearch(subsidiaryId);
+            projectField.addSelectOption({ value: '', text: '' });
+            if (projectResults && projectResults.length > 0){
+                 projectResults.forEach(projArray => {
+                projectField.addSelectOption({
+                    value: projArray.internalid,
+                    text: projArray.entityid,
+                    isSelected: (projArray.internalid === projectId)
+                });
+            });
+
+            }
+           
             projectField.updateBreakType({
                 breakType: serverWidget.FieldBreakType.STARTROW
             });

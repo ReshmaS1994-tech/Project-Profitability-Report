@@ -141,7 +141,7 @@ define(['N/search', 'N/runtime'],
         let pagedData = transactionSearch.runPaged({ pageSize: PAGE_SIZE });
         pagedData.pageRanges.forEach(function (pageRange) {
             let page = pagedData.fetch({ index: pageRange.index });
-            allResults = allResults.concat(page.data);
+            allResults = allResults.concat(page.data);            
         });
         log.debug('All Result:', allResults);
         let projectData = {};
@@ -182,13 +182,11 @@ define(['N/search', 'N/runtime'],
             })) || 0;
              let  baseCurrencyCogs= parseFloat(result.getValue({
                  name: "custcol_jj_bc_cogs",
-                summary: "SUM",
-                label: "Base Currency COGS"
+                summary: "SUM"     
             })) || 0;
              let  baseCurrencyGP= parseFloat(result.getValue({
                  name: "custcol_jj_bc_gross_pay",
                 summary: "SUM",
-                label: "Base Currency Gross Pay"
             })) || 0;
             let projectKey = projectName + '-' + client;
 
@@ -217,19 +215,40 @@ define(['N/search', 'N/runtime'],
             projectData[projectKey].bCCogs += baseCurrencyCogs;
             projectData[projectKey].bCGP += baseCurrencyGP;
         });
-        log.debug("projectData",projectData)
         return Object.values(projectData);
     } catch (e) {
       log.error("error@runPagedTransactionSearch", e);
     }
+    }
+    /**
+     * Searches for all projects (jobs) associated with a given subsidiary.
+     *
+     * @param {string|number} subsidiaryId The internal ID of the subsidiary to search for. This parameter is required.
+     * @returns {Array} An array of objects, where each object represents a project and contains its internal ID and entity ID. Returns an empty array if no subsidiaryId is provided or no projects are found.
+     */
+    function projectSearch(subsidiaryId)
+    {
+         let projArray = [];
+             if (subsidiaryId) {  
+                var projectSearch = search.create({
+                    type: 'job',
+                    filters: [
+                        ['subsidiary', 'anyof', subsidiaryId]
+                    ],
+                    columns: ['internalid', 'entityid']
+                });
+              projectSearch.run().each(function(result) {
+                   projArray.push({internalid:result.getValue('internalid'),entityid:result.getValue('entityid')})
+                    return true;
+                });
+                return projArray;
+            }
     }
 
     /** Utility: get subsidiaries for current user */
     function getSubsidiaryOptionsForUser() {
         try{
         let currentRole = runtime.getCurrentUser().role;
-        log.debug('currentRole', currentRole);
-
         if (currentRole == '3') {
             let opts = [];
             let subSearch = search.create({
@@ -243,7 +262,6 @@ define(['N/search', 'N/runtime'],
             });
             return opts;
         }
-
         let subsidiaryMap = {};
         let roleSearch = search.create({
             type: "role",
@@ -281,6 +299,7 @@ define(['N/search', 'N/runtime'],
     }
     return {
         runPagedTransactionSearch: runPagedTransactionSearch,
-        getSubsidiaryOptionsForUser: getSubsidiaryOptionsForUser
+        getSubsidiaryOptionsForUser: getSubsidiaryOptionsForUser,
+        projectSearch:projectSearch
     };
 });
